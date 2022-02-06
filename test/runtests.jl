@@ -26,7 +26,16 @@ using Test
             @test !has_match(d, "A" => r"^A")
             @test !has_match(d, "A" => r"^B")
         end
+
     end
+
+    ## --------------------------------------------------------------
+    @info("Testing finders and filters")
+
+    col = ["AAA", "BBB", 123]
+    @test all(filter_match(col, r"^[A|1]") .== filter_match(col, "A", "1"))
+    @test findfirst_match(col, r"^[A|1]") == (1, first(col))
+    @test findall_match(col, r"^[A|1]") == [1, 3]
     
     ## --------------------------------------------------------------
 end

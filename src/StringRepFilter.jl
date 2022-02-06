@@ -210,9 +210,9 @@ end
 """
     findall_match(col, qp, qps...)::Vector{Int}
 
-Returns all the index of the elements in the collection which match the queries.
+Returns all the indexes of the elements in the collection which match the queries.
 The index is based on the `iterator` interface (e.g. index 1 means the element yield by the first iteration).
-For capturing the elements instead use `find_match`
+For capturing the elements instead use `find_match`.
 
 # Examples
 ```julia-repl
@@ -246,7 +246,7 @@ end
     findfirst_match(col, qp, qps...)::Union{Nothing, Tuple}
 
 Returns the tuple (index, item) for the first item in the collection which match the queries.
-If no match is found returns nothing
+If no match is found returns nothing.
 The index is based on the `iterator` interface (e.g. index 1 means the element yield by the first iteration).
 
 # Examples
@@ -266,8 +266,11 @@ julia> findfirst_match(d, "A" => r"^A")
 julia> findfirst_match(d, r"\".+B\"")
 (1, Pair{Any, String}("A", "AAB"))
 
-julia> findfirst_match(d, "C") |> typeof
+julia> findfirst_match(d, "ZZ") |> typeof
 Nothing
+
+julia> all(filter_match(d, r"[A|B]") .== filter_match(d, "A", "B"))
+true
 ```
 """
 function findfirst_match(col, qp, qps...)
@@ -284,8 +287,7 @@ end
     filter_match(col, qp, qps...)::Vector
 
 Returns the elements which match the queries.
-If no match is found returns nothing
-The index is based on the `iterator` interface (e.g. index 1 means the element yield by the first iteration).
+If no match is found returns an empty vector.
 
 # Examples
 ```julia-repl
