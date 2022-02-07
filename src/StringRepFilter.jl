@@ -117,12 +117,29 @@ has_match(obj, qp::Union{Regex, String}) = !isnothing(_match(qp, strrep(obj)))
 
 Check if all queries match the string representation of the object.
 """
-function has_match(obj, qps::Vector)
-    for qp in qps
-        ismatch = has_match(obj, qp)
-        !ismatch && return false
+function has_match(obj, qs::Vector)
+    for qi in qs
+        ismatch = has_match(obj, qi)
+        !ismatch && return ismatch
     end
     return true
+end
+
+has_match(obj, qs::Tuple) = !has_match(obj, collect(qs))
+
+"""
+    has_match(obj, qps::Vector)
+
+Check if any queries match the string representation of the object.
+"""
+function has_match(obj, q, qs...)
+    ismatch = has_match(obj, q)
+    ismatch && return true
+    for qi in qs
+        ismatch = has_match(obj, qi)
+        ismatch && return true
+    end
+    return false
 end
 
 ## ------------------------------------------------------------------
