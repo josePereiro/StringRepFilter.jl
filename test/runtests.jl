@@ -10,6 +10,11 @@ using Test
 
     for d in [Dict(:A => "AAB"), (;A = "AAB"), Obj("AAB")]
         
+        @test has_match(d, "B")
+        @test has_match(d, Dict, :A) #  dict or has property A
+        @test has_match(d, :A => String)
+        @test has_match(d, :A => [(x) -> length(x) == 3])
+        
         @test has_match(d, :A => "B")
         @test has_match(d, :A => r"^A")
         @test has_match(d, :A => r"B$")

@@ -124,7 +124,6 @@ julia> strrep(o)
 
 julia> ocol = [Blo(_randstuff(), _randstuff()) for _ in 1:100]
 100-element Vector{Blo}:
-100-element Vector{Blo}:
  Blo("FDTIWG", "XXVBJMX")
  Blo("JTVGOU", 0.035922399345289735)
  Blo(2, "KLMLE")
@@ -209,9 +208,10 @@ julia> filter_match(ocol, r"0\.[5-9]\d+")
 ```
 
 Lets find all `Blo`s which has textual `B` fields but not containing a "V", or have a natural `A` field.
+Note that the last query is a type assertion AND a boolean function.
 
 ```julia
-julia> filter_match(ocol, [:B => "[A-Z]+", (:B => "V",) ], :A => r"^[1-9]+$")
+julia> filter_match(ocol, [:B => "[A-Z]+", (:B => "V",) ], :A => [Real, isinteger])
 50-element Vector{Blo}:
  Blo(2, "KLMLE")
  Blo(1, 7)

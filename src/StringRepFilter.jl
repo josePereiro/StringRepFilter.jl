@@ -8,7 +8,8 @@ export show_strrep, show_elstrrep
 
 ## ------------------------------------------------------------------
 _match(rstr::String, str::String) = match(Regex(rstr), str)
-_match(r, str) = match(r, str)
+_match(reg::Regex, str::String) = match(reg, str)
+_match(r, str) = _match(string(r), string(str))
 # _eltype(obj) = try; eltype(obj) catch; Any end
 
 ## ------------------------------------------------------------------
@@ -47,10 +48,10 @@ julia> has_match(d, :B => r"^A")
 false
 ```
 """
-function has_match(dict::Union{AbstractDict, NamedTuple}, qp::Pair)
-    rkey, reg = qp
+function has_match(dict::AbstractDict, qp::Pair)
+    rkey, q = qp
     !haskey(dict, rkey) && return false
-    has_match(dict[rkey], reg)
+    has_match(dict[rkey], q)
 end
 
 """
@@ -74,10 +75,10 @@ false
 ```
 """
 function has_match(pair::Pair, qp::Pair)
-    rkey, reg = qp
+    rkey, q = qp
     pkey, val = pair
     !isequal(rkey, pkey) && return false
-    has_match(val, reg)
+    has_match(val, q)
 end
 
 """
@@ -96,13 +97,43 @@ julia> has_match(o, :A => r"^A")
 true
 
 julia> has_match(o, :B => r"^A")
-
+false
 ```
 """
 function has_match(obj, qp::Pair)
-    rkey, reg = qp
+    rkey, q = qp
     !hasproperty(obj, rkey) && return false
-    has_match(getproperty(obj, rkey), reg)
+    has_match(getproperty(obj, rkey), q)
+end
+
+"""
+    has_match(obj, q::Symbol)::Bool
+
+Equivalent hasproperty(obj, q)
+
+"""
+function has_match(obj, q::Symbol)
+    hasproperty(obj, q)
+end
+
+"""
+    has_match(obj, q::Type)::Bool
+
+Equivalent obj isa T
+
+"""
+function has_match(obj, T::Type)
+    obj isa T
+end
+
+"""
+    has_match(obj, q::Type)::Bool
+
+Equivalent obj isa T
+
+"""
+function has_match(obj, f::Function)
+    f(obj)::Bool
 end
 
 """
@@ -110,7 +141,8 @@ end
 
 Check if the query match the string representation of the object.
 """
-has_match(obj, qp::Union{Regex, String}) = !isnothing(_match(qp, strrep(obj)))
+has_match(obj, p::Union{Regex, String}) = !isnothing(_match(p, strrep(obj)))
+has_match(obj, p) = !isnothing(_match(p, strrep(obj)))
 
 """
     has_match(obj, qps::Vector)
@@ -125,10 +157,16 @@ function has_match(obj, qs::Vector)
     return true
 end
 
+
+"""
+    has_match(obj, qs::Tuple)::Vector
+
+It negates the query match. Equivalent to !has_match(obj, collect(qs))
+"""
 has_match(obj, qs::Tuple) = !has_match(obj, collect(qs))
 
 """
-    has_match(obj, qps::Vector)
+    has_match(obj, q, qs...)::Bool
 
 Check if any queries match the string representation of the object.
 """
