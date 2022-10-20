@@ -66,7 +66,7 @@ true
 
 ```
 
-In the case of an dictionary, the type of the key must be respected.
+In the case of a dictionary, the type of the key must be respected.
 
 ```julia
 julia> has_match(dic, :A => "^1")
@@ -97,7 +97,7 @@ true
 
 This way a compound boolean expression can be computed.
 
-Finally, wrap a patter in a tuple to negate it.
+Finally, wrap a pattern in a tuple to negate it.
 
 ```julia
 julia> has_match(dic, ["A" => "^1", :B => "C{3}", r"^NO MATCH"])
